@@ -23,8 +23,16 @@ public class BeerControllerIT extends BaseIT {
     }
 
     @Test
-    void findBeersWithHttpBasic() throws Exception {
-        mockMvc.perform(get("/beers/find").with(httpBasic("admin", "password")))
+    void findCustomersWithHttpBasic() throws Exception {
+        mockMvc.perform(get("/customers/find").with(httpBasic("admin", "password")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("customers/findCustomers"))
+                .andExpect(model().attributeExists("customer"));
+    }
+
+    @Test
+    void findBeersPermitAll() throws Exception {
+        mockMvc.perform(get("/beers/find"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/findBeers"))
                 .andExpect(model().attributeExists("beer"));
