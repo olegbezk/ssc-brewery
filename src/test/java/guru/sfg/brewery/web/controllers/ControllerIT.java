@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @WebMvcTest
-public class BeerControllerIT extends BaseIT {
+public class ControllerIT extends BaseIT {
 
     @WithMockUser()
     @Test
