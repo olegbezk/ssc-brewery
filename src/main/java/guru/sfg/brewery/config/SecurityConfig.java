@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -33,17 +34,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     PasswordEncoder passwordEncoder() {
-        return new LdapShaPasswordEncoder();
+        return new StandardPasswordEncoder();
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser("admin").password("{SSHA}EI0SgIJ/6W6OLcsbhQhpVEmP7u8Zt3ujzcw1eQ==").roles("ADMIN")
+                .withUser("admin").password("3f74830392f17cc1f6a6d19572114745ee9e53fd8bab99f28ef25753ac07069c397c269d79b138e8").roles("ADMIN")
                 .and()
-                .withUser("user").password("{SSHA}EI0SgIJ/6W6OLcsbhQhpVEmP7u8Zt3ujzcw1eQ==").roles("USER")
+                .withUser("user").password("3f74830392f17cc1f6a6d19572114745ee9e53fd8bab99f28ef25753ac07069c397c269d79b138e8").roles("USER")
                 .and()
-                .withUser("scott").password("tiger").roles("CUSTOMER");
+                .withUser("scott").password("180973248590b396e2ac2dc8ef0acf5a309e2cfc9bb34cc4443b0c7b2f1690e2618140b0bc5a9dc6").roles("CUSTOMER");
     }
 
 //    @Bean
