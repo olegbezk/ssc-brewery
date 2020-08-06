@@ -1,5 +1,6 @@
 package guru.sfg.brewery.config;
 
+import guru.sfg.brewery.security.SfgPasswordEncoderFactories;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -7,9 +8,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -34,17 +33,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return SfgPasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser("admin").password("$2a$10$3M7Csc634m6OW/D83Ph5hukbGjZJ5TYsDJghxQsWS9z9mJc90ZxHC").roles("ADMIN")
+                .withUser("admin").password("{bcrypt}$2a$10$3M7Csc634m6OW/D83Ph5hukbGjZJ5TYsDJghxQsWS9z9mJc90ZxHC").roles("ADMIN")
                 .and()
-                .withUser("user").password("$2a$10$3M7Csc634m6OW/D83Ph5hukbGjZJ5TYsDJghxQsWS9z9mJc90ZxHC").roles("USER")
+                .withUser("user").password("{sha256}d294526b7a86705137b3b818f0de4535c0e31a0381d455a31c7c02c95987589cd5191879826860a3").roles("USER")
                 .and()
-                .withUser("scott").password("$2a$10$8Tvl0UWV0w6bnO7oqGkBHuCj8bZoVxFAe.G5iQskRkOS0gP3vLT.y").roles("CUSTOMER");
+                .withUser("scott").password("{ldap}{SSHA}CsgckXqjNwHYZb7BHpSFEYhLERJw1QbgYYD1oA==").roles("CUSTOMER");
     }
 
 //    @Bean
