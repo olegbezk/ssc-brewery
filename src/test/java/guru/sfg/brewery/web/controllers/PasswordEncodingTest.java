@@ -15,6 +15,15 @@ public class PasswordEncodingTest {
     private static final String PASSWORD = "password";
 
     @Test
+    void testBCrypt15() {
+        PasswordEncoder bCrypt = new BCryptPasswordEncoder(15);
+
+        System.out.println(bCrypt.encode(PASSWORD));
+        System.out.println(bCrypt.encode(PASSWORD));
+        System.out.println(bCrypt.encode("tiger"));
+    }
+
+    @Test
     void testBCrypt() {
         PasswordEncoder bCrypt = new BCryptPasswordEncoder();
 
