@@ -49,5 +49,5 @@ public class User {
     private Boolean credentialsNonExpired = true;
 
     @Builder.Default
-    private Boolean locked = true;
+    private Boolean enabled = true;
 }

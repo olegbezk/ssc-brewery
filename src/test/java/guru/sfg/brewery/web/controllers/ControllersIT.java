@@ -22,7 +22,7 @@ public class ControllersIT extends BaseIT {
 
     @Test
     void initCreationFormWithScottCredentials() throws Exception {
-        mockMvc.perform(get("/beers/new").with(httpBasic("scott", "tiger")))
+        mockMvc.perform(get("/beers/new").with(httpBasic("scott", "password")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/createBeer"))
                 .andExpect(model().attributeExists("beer"));

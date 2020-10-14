@@ -33,7 +33,7 @@ public class UserDataLoader implements CommandLineRunner {
         var customer = authorityRepository.save(Authority.builder().role("CUSTOMER").build());
 
         userRepository.save(User.builder()
-                .username("spring")
+                .username("admin")
                 .password(passwordEncoder.encode("password"))
                 .authority(admin)
                 .build());
