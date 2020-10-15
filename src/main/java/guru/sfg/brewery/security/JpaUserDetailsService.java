@@ -1,4 +1,4 @@
-package guru.sfg.brewery.services;
+package guru.sfg.brewery.security;
 
 import guru.sfg.brewery.domain.security.Authority;
 import guru.sfg.brewery.domain.security.User;

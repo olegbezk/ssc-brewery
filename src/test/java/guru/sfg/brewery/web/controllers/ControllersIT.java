@@ -1,7 +1,8 @@
 package guru.sfg.brewery.web.controllers;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -30,16 +31,16 @@ public class ControllersIT extends BaseIT {
 
     @Test
     void initCreationForm() throws Exception {
-        mockMvc.perform(get("/beers/new").with(httpBasic("user", "password")))
+        mockMvc.perform(get("/beers/new").with(httpBasic("admin", "admin")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/createBeer"))
                 .andExpect(model().attributeExists("beer"));
     }
 
-    @WithMockUser()
-    @Test
-    void findBeers() throws Exception {
-        mockMvc.perform(get("/beers/find"))
+    @ParameterizedTest(name = "#{index} with [{arguments}]")
+    @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamAllUsers")
+    void findBeers(String user, String pwd) throws Exception {
+        mockMvc.perform(get("/beers/find").with(httpBasic(user, pwd)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/findBeers"))
                 .andExpect(model().attributeExists("beer"));
