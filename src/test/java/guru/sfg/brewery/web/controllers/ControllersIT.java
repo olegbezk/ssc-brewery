@@ -14,7 +14,7 @@ public class ControllersIT extends BaseIT {
 
     @Test
     void initCreationFormWithAdmin() throws Exception {
-        mockMvc.perform(get("/beers/new").with(httpBasic("admin", "password")))
+        mockMvc.perform(get("/beers/new").with(httpBasic("admin", "admin")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/createBeer"))
                 .andExpect(model().attributeExists("beer"));
@@ -22,7 +22,7 @@ public class ControllersIT extends BaseIT {
 
     @Test
     void initCreationFormWithScottCredentials() throws Exception {
-        mockMvc.perform(get("/beers/new").with(httpBasic("scott", "password")))
+        mockMvc.perform(get("/beers/new").with(httpBasic("scott", "tiger")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/createBeer"))
                 .andExpect(model().attributeExists("beer"));
@@ -47,7 +47,7 @@ public class ControllersIT extends BaseIT {
 
     @Test
     void findCustomersWithHttpBasic() throws Exception {
-        mockMvc.perform(get("/customers/find").with(httpBasic("admin", "password")))
+        mockMvc.perform(get("/customers/find").with(httpBasic("admin", "admin")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("customers/findCustomers"))
                 .andExpect(model().attributeExists("customer"));

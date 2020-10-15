@@ -18,10 +18,24 @@ public class BeerRestControllerIT extends BaseIT {
     }
 
     @Test
+    void deleteBeerHttpBasicUserRole() throws Exception {
+        mockMvc.perform(delete("/api/v1/beer/97df8c39-98c4-4ae0-b663-453e8e19c311")
+                .with(httpBasic("user", "password")))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deleteBeerHttpBasicCustomerRole() throws Exception {
+        mockMvc.perform(delete("/api/v1/beer/97df8c39-98c4-4ae0-b663-453e8e19c311")
+                .with(httpBasic("scott", "tiger")))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void deleteBeerByIdURL() throws Exception {
         mockMvc.perform(delete("/api/v1/beer/97df8c39-98c4-4ae0-b663-453e8e19c311")
                 .param("apiKey", "admin")
-                .param("apiSecret", "password"))
+                .param("apiSecret", "admin"))
                 .andExpect(status().isOk());
     }
 
@@ -37,14 +51,14 @@ public class BeerRestControllerIT extends BaseIT {
     void deleteBeerById() throws Exception {
         mockMvc.perform(delete("/api/v1/beer/97df8c39-98c4-4ae0-b663-453e8e19c311")
                 .header("Api-Key", "admin")
-                .header("Api-Secret", "password"))
+                .header("Api-Secret", "admin"))
                 .andExpect(status().isOk());
     }
 
     @Test
     void deleteBeerHttpBasic() throws Exception {
         mockMvc.perform(delete("/api/v1/beer/97df8c39-98c4-4ae0-b663-453e8e19c311")
-                .with(httpBasic("admin", "password")))
+                .with(httpBasic("admin", "admin")))
                 .andExpect(status().is2xxSuccessful());
     }
 
