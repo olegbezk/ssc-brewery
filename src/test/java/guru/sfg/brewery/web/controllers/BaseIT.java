@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 @SpringBootTest
 public class BaseIT {
+
     @Autowired
     protected WebApplicationContext wac;
 
