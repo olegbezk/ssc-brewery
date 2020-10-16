@@ -24,7 +24,6 @@ public class CustomerControllerIT extends BaseIT {
             mockMvc.perform(get("/customers")
                     .with(httpBasic(user, pwd)))
                     .andExpect(status().isOk());
-
         }
 
         @Test
