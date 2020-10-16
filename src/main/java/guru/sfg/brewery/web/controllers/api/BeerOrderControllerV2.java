@@ -6,16 +6,20 @@ import guru.sfg.brewery.services.BeerOrderService;
 import guru.sfg.brewery.web.model.BeerOrderDto;
 import guru.sfg.brewery.web.model.BeerOrderPagedList;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v2/orders/")
@@ -27,11 +31,12 @@ public class BeerOrderControllerV2 {
 
     @BeerOrderReadPermissionV2
     @GetMapping
-    public BeerOrderPagedList listOrders(@AuthenticationPrincipal User user,
-                                         @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-                                         @RequestParam(value = "pageSize", required = false) Integer pageSize){
-
-        if (pageNumber == null || pageNumber < 0){
+    public BeerOrderPagedList listOrders(
+            @AuthenticationPrincipal User user,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize
+    ) {
+        if (pageNumber == null || pageNumber < 0) {
             pageNumber = DEFAULT_PAGE_NUMBER;
         }
 
@@ -47,10 +52,13 @@ public class BeerOrderControllerV2 {
     }
 
     @BeerOrderReadPermissionV2
-    @GetMapping("orders/{orderId}")
-    public BeerOrderDto getOrder(@PathVariable("orderId") UUID orderId){
-
-        return null;
-        //  return beerOrderService.getOrderById(orderId);
+    @GetMapping("{orderId}")
+    public BeerOrderDto getOrder(@PathVariable("orderId") UUID orderId) {
+        BeerOrderDto orderById = beerOrderService.getOrderById(orderId);
+        if (orderById == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order Not Found");
+        }
+        log.debug("Found order: " + orderById);
+        return orderById;
     }
 }
