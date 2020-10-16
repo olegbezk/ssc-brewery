@@ -1,5 +1,8 @@
 package guru.sfg.brewery.web.controllers.api;
 
+import guru.sfg.brewery.security.permissions.BeerOrderCreatePermission;
+import guru.sfg.brewery.security.permissions.BeerOrderReadPermission;
+import guru.sfg.brewery.security.permissions.BeerOrderUpdatePermission;
 import guru.sfg.brewery.services.BeerOrderService;
 import guru.sfg.brewery.web.model.BeerOrderDto;
 import guru.sfg.brewery.web.model.BeerOrderPagedList;
@@ -31,9 +34,7 @@ public class BeerOrderController {
         this.beerOrderService = beerOrderService;
     }
 
-    @PreAuthorize("hasAuthority('order.read') " +
-            "OR hasAuthority('customer.order.read') " +
-            "AND @beerOrderAuthManager.customerIdMatches(authentication, #customerId)")
+    @BeerOrderReadPermission
     @GetMapping("orders")
     public BeerOrderPagedList listOrders(
             @PathVariable("customerId") UUID customerId,
@@ -51,26 +52,20 @@ public class BeerOrderController {
         return beerOrderService.listOrders(customerId, PageRequest.of(pageNumber, pageSize));
     }
 
-    @PreAuthorize("hasAuthority('order.create') " +
-            "OR hasAuthority('customer.order.create') " +
-            "AND @beerOrderAuthManager.customerIdMatches(authentication, #customerId)")
+    @BeerOrderCreatePermission
     @PostMapping("orders")
     @ResponseStatus(HttpStatus.CREATED)
     public BeerOrderDto placeOrder(@PathVariable("customerId") UUID customerId, @RequestBody BeerOrderDto beerOrderDto) {
         return beerOrderService.placeOrder(customerId, beerOrderDto);
     }
 
-    @PreAuthorize("hasAuthority('order.read') " +
-            "OR hasAuthority('customer.order.read') " +
-            "AND @beerOrderAuthManager.customerIdMatches(authentication, #customerId)")
+    @BeerOrderReadPermission
     @GetMapping("orders/{orderId}")
     public BeerOrderDto getOrder(@PathVariable("customerId") UUID customerId, @PathVariable("orderId") UUID orderId) {
         return beerOrderService.getOrderById(customerId, orderId);
     }
 
-    @PreAuthorize("hasAuthority('order.update') " +
-            "OR hasAuthority('customer.order.update') " +
-            "AND @beerOrderAuthManager.customerIdMatches(authentication, #customerId)")
+    @BeerOrderUpdatePermission
     @PutMapping("/orders/{orderId}/pickup")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void pickupOrder(@PathVariable("customerId") UUID customerId, @PathVariable("orderId") UUID orderId) {
