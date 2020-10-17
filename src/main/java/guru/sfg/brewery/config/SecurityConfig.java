@@ -1,12 +1,14 @@
 package guru.sfg.brewery.config;
 
 import guru.sfg.brewery.security.SfgPasswordEncoderFactories;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -15,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final UserDetailsService userDetailsService;
 
     // needed for use with Spring Data JPA SPeL
     @Bean
@@ -34,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin( loginConfigurer -> {
+                .formLogin(loginConfigurer -> {
                     loginConfigurer
                             .loginProcessingUrl("/login")
                             .loginPage("/").permitAll()
@@ -42,15 +47,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                             .defaultSuccessUrl("/")
                             .failureUrl("/?error");
                 })
-                .logout( logoutConfigurer -> {
+                .logout(logoutConfigurer -> {
                     logoutConfigurer
-                            .logoutRequestMatcher(new AntPathRequestMatcher(
-                                    "/logout", RequestMethod.GET.name()))
+                            .logoutRequestMatcher(new AntPathRequestMatcher("/logout", RequestMethod.GET.name()))
                             .logoutSuccessUrl("/?logout")
                             .permitAll();
                 })
                 .httpBasic()
-                .and().csrf().ignoringAntMatchers("/h2-console/**", "/api/**");
+                .and()
+                .csrf().ignoringAntMatchers("/h2-console/**", "/api/**")
+                .and()
+                .rememberMe().key("sfg-key").userDetailsService(userDetailsService);
 
         //h2 console config
         http.headers().frameOptions().sameOrigin();
