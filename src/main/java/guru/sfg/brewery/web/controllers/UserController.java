@@ -24,7 +24,7 @@ public class UserController {
     private final GoogleAuthenticator googleAuthenticator;
 
     @GetMapping("/register2fa")
-    public String register2fa(Model model){
+    public String register2Fa(Model model){
 
         User user = getUser();
         String url = GoogleAuthenticatorQRGenerator.getOtpAuthURL("SFG", user.getUsername(),
@@ -38,11 +38,44 @@ public class UserController {
     }
 
     @PostMapping
-    public String confirm2fa(@RequestParam Integer verifyCode) {
+    public String confirm2Fa(@RequestParam Integer verifyCode) {
 
-        //TODO: implement it
+        User user = getUser();
 
-        return "index";
+        log.debug("Entered code is: " + verifyCode);
+
+        if (googleAuthenticator.authorizeUser(user.getUsername(), verifyCode)) {
+            User savedUser = userRepository.findById(user.getId()).orElseThrow();
+            savedUser.setUserGoogle2fa(true);
+
+            userRepository.save(savedUser);
+
+            return "index";
+        } else {
+            // bad code
+            return "user/register2fa";
+        }
+    }
+
+    @GetMapping("/verify2fa")
+    public String verify2Fa() {
+        return "user/verify2fa";
+    }
+
+    @PostMapping
+    public String verify2Fa(@RequestParam Integer verifyCode) {
+
+        User user = getUser();
+
+        if (googleAuthenticator.authorizeUser(user.getUsername(), verifyCode)) {
+
+            ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+                    .setGoogle2faRequired(false);
+
+            return "index";
+        }
+
+        return "user/verify2fa";
     }
 
     private User getUser() {
