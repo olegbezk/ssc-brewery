@@ -34,7 +34,7 @@ public class GoggleCredentialsRepository implements ICredentialRepository {
         User user = userRepository.findByUsername(username).orElseThrow();
 
         user.setGoogle2faSecret(secretKey);
-        user.setUserGoogle2fa(true);
+        user.setUseGoogle2fa(true);
 
         userRepository.save(user);
     }

@@ -7,16 +7,16 @@ import guru.sfg.brewery.repositories.security.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RequestMapping("/user")
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class UserController {
 
@@ -24,11 +24,11 @@ public class UserController {
     private final GoogleAuthenticator googleAuthenticator;
 
     @GetMapping("/register2fa")
-    public String register2Fa(Model model){
+    public String register2Fa(Model model) {
 
         User user = getUser();
         String url = GoogleAuthenticatorQRGenerator.getOtpAuthURL("SFG", user.getUsername(),
-                        googleAuthenticator.createCredentials(user.getUsername()));
+                googleAuthenticator.createCredentials(user.getUsername()));
 
         log.debug("Google QR URL: " + url);
 
@@ -37,7 +37,7 @@ public class UserController {
         return "user/register2fa";
     }
 
-    @PostMapping
+    @PostMapping("/register2fa")
     public String confirm2Fa(@RequestParam Integer verifyCode) {
 
         User user = getUser();
@@ -46,11 +46,10 @@ public class UserController {
 
         if (googleAuthenticator.authorizeUser(user.getUsername(), verifyCode)) {
             User savedUser = userRepository.findById(user.getId()).orElseThrow();
-            savedUser.setUserGoogle2fa(true);
-
+            savedUser.setUseGoogle2fa(true);
             userRepository.save(savedUser);
 
-            return "index";
+            return "/index";
         } else {
             // bad code
             return "user/register2fa";
@@ -62,8 +61,8 @@ public class UserController {
         return "user/verify2fa";
     }
 
-    @PostMapping
-    public String verify2Fa(@RequestParam Integer verifyCode) {
+    @PostMapping("/verify2fa")
+    public String verifyPostOf2Fa(@RequestParam Integer verifyCode) {
 
         User user = getUser();
 
@@ -72,9 +71,8 @@ public class UserController {
             ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                     .setGoogle2faRequired(false);
 
-            return "index";
+            return "/index";
         }
-
         return "user/verify2fa";
     }
 
